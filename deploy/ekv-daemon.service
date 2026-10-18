@@ -1,0 +1,26 @@
+# eKV controller daemon, systemd unit (example; adjust paths, GPU, and policy).
+# The daemon reads the engine's published statistic block by CUDA IPC and writes decisions to the
+# engine's control mailbox. It never writes serving memory. It discovers the engine, attaches again
+# after an engine restart (--follow), and writes a heartbeat to /run/ekv/health.json. A daemon that
+# crashes or stalls leaves the engine on full reads when its last lease passes.
+[Unit]
+Description=eKV request-level KV controller
+After=network.target
+
+[Service]
+Type=simple
+Environment=CUDA_VISIBLE_DEVICES=0
+Environment=PYTHONPATH=/opt/ekv
+# MUST match the engine's EKV_RUNTIME_DIR and EKV_CONTROL_DIR: both sides read the same
+# publications and the same mailbox. A dedicated runtime directory avoids /tmp's shared namespace
+# and systemd PrivateTmp isolation.
+Environment=EKV_RUNTIME_DIR=/run/ekv
+Environment=EKV_CONTROL_DIR=/run/ekv
+RuntimeDirectory=ekv
+ExecStart=/usr/bin/python3 -m observe.daemon --follow --duration 0 --policy sum --budget 0.5 \
+  --lease-seconds 0.5 --health-file /run/ekv/health.json
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target

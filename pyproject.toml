@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ekv"
+version = "0.1.0"
+description = "eKV: transparent per-request KV-cache observation + attribution plane"
+requires-python = ">=3.11"
+
+[tool.setuptools]
+# eKV's two packages + the vLLM plugin entry-point module
+py-modules = ["ekv_vllm_plugin"]
+packages = ["observe", "runtime"]
+
+# The multi-process injection point: vLLM loads this in the engine core AND every
+# TP worker (verified: v1/engine/core.py + v1/worker/worker_base.py call
+# load_general_plugins). register() installs eKV in each process.
+[project.entry-points."vllm.general_plugins"]
+ekv = "ekv_vllm_plugin:register"

@@ -1,0 +1,37 @@
+__pycache__/
+*.pyc
+*.so
+*.o
+build/
+.cache/
+*.log
+# compiler and engine caches that a runner leaves in a run directory
+tc_*/
+# vendored libbpf build output (rebuild via scripts/build_ebpf.sh)
+third_party/
+# eBPF build artifacts
+observe/ebpf/kv_copy
+observe/ebpf/http_label
+observe/ebpf/ekv_readout
+observe/ebpf/kv_alloc
+observe/ebpf/storage_read
+observe/ebpf/vmlinux.h
+observe/ebpf/*.skel.h
+
+# editor (personal)
+.vscode/
+
+# Claude Code session transcripts
+*-this-session-is-being-continued-*.txt
+
+# latex build artifacts
+paper/*.aux
+paper/*.bbl
+paper/*.blg
+paper/*.log
+paper/*.out
+paper/*.pdf
+*.egg-info/
+# Triton compile caches inside run dirs: rebuild artifacts, never evidence
+eval/*/data/*/tc/
+eval/*/data/*/tc_*/
